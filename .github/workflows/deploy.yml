@@ -4,8 +4,18 @@ on:
     branches:
       - main
       - dev
+env: 
+  MONGODB_DB_NAME: gh-db-name
 jobs:
   test:
+    env: 
+      MONGODB_CLUSTER_ADDRESS: gh-test-db-name
+      # secret values should be stored in GitHub Secrets at repository settings --> Secrets and variables --> Actions --> New repository secret --->  
+      # for example, MONGODB_USERNAME with value gh-username and MONGODB_PASSWORD with value gh-password
+      # screats. means to get the value from GitHub Secrets
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+      PORT: 8080
     environment: testing
     runs-on: ubuntu-latest
     steps:
@@ -19,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run server
-        run: npm start & npx wait-on http://127.0.0.1:XYZ
+        run: npm start & npx wait-on http://127.0.0.1:$PORT
       - name: Run tests
         run: npm test
       - name: Output information
@@ -31,3 +41,5 @@ jobs:
       - name: Output information
         run: |        
           echo "..."
+          echo " MONGODB_DB_NAME: $MONGODB_DB_NAME"
+          echo " MONGODB_USERNAME: $MONGODB_USERNAME"
